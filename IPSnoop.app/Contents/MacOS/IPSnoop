@@ -1,0 +1,3 @@
+#!/bin/bash
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+java -Dapple.awt.UIElement=true -jar "$SCRIPT_DIR/../Resources/IPSnoop.jar"
