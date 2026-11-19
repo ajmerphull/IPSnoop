@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="IPSnoop" default="build-and-copy" basedir=".">
+    <description>Monitors your public IP address and notifies you of changes.</description>
+    
+    <!-- Basic Properties -->
+    <property name="build.dir" location="build"/>
+    <property name="dist.dir" location="dist"/>
+    <property name="src.dir" location="src"/>
+    <property name="app.bundle.dir" location="IPSnoop.app/Contents/Resources"/>
+    
+    <!-- Main Targets -->
+    <target name="build-and-copy" depends="clean,compile,jar,copy-to-app"
+            description="Full build including copying to app bundle"/>
+    
+    <target name="build" depends="clean,compile,jar"
+            description="Build without copying to app bundle"/>
+    
+    <!-- Clean Targets -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+    
+    <!-- Compilation -->
+    <target name="compile">
+        <mkdir dir="${build.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false"/>
+    </target>
+    
+    <!-- JAR Creation -->
+    <target name="jar" depends="compile">
+        <mkdir dir="${dist.dir}"/>
+        <jar destfile="${dist.dir}/IPSnoop.jar" basedir="${build.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="ipsnoop.IPSnoop"/>
+            </manifest>
+        </jar>
+        <echo message="[SUCCESS] Built IPSnoop.jar at ${dist.dir}/IPSnoop.jar"/>
+    </target>
+    
+    <!-- Copy JAR to Application Bundle -->
+    <target name="copy-to-app" depends="jar">
+        <echo message="[INFO] Copying JAR to application bundle..."/>
+        
+        <!-- Verify source JAR exists -->
+        <available file="${dist.dir}/IPSnoop.jar" property="jar.exists"/>
+        <fail unless="jar.exists" message="[ERROR] JAR file not found at ${dist.dir}/IPSnoop.jar"/>
+        
+        <!-- Create target directory if needed -->
+        <mkdir dir="${app.bundle.dir}"/>
+        
+        <!-- Perform the copy -->
+        <copy file="${dist.dir}/IPSnoop.jar" 
+              todir="${app.bundle.dir}" 
+              overwrite="true"
+              verbose="true"/>
+        
+        <echo message="[SUCCESS] Copied to ${app.bundle.dir}/IPSnoop.jar"/>
+    </target>
+</project>
